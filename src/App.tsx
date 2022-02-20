@@ -8,9 +8,10 @@ import { persistCache } from 'apollo3-cache-persist'
 import AsyncStorage from '@react-native-community/async-storage'
 
 const cache = new InMemoryCache()
+const BASE_URL = 'https://api.spacex.land/graphql/' // 'https://48p1r2roz4.sse.codesandbox.io'
 
 const client = new ApolloClient({
-  uri: 'https://48p1r2roz4.sse.codesandbox.io',
+  uri: BASE_URL,
   cache,
   defaultOptions: {
     watchQuery: {
