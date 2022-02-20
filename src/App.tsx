@@ -1,38 +1,45 @@
-import React from 'react';
-import { SafeAreaView, StatusBar, Text, useColorScheme } from 'react-native';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
-import {
-  ApolloClient,
-  InMemoryCache,
-  ApolloProvider,
-  useQuery,
-  gql,
-} from '@apollo/client';
+import React, { useState, useEffect } from 'react'
+import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
+
+import { NavigationContainer } from '@react-navigation/native'
+import { AppNavigation } from './navigation'
+import { ActivityIndicator } from 'react-native'
+import { persistCache } from 'apollo3-cache-persist'
+import AsyncStorage from '@react-native-community/async-storage'
+
+const cache = new InMemoryCache()
+
+const client = new ApolloClient({
+  uri: 'https://48p1r2roz4.sse.codesandbox.io',
+  cache,
+  defaultOptions: {
+    watchQuery: {
+      fetchPolicy: 'cache-and-network'
+    }
+  }
+})
 
 const App = () => {
-  const client = new ApolloClient({
-    uri: 'https://48p1r2roz4.sse.codesandbox.io',
-    cache: new InMemoryCache(),
-  });
+  const [loadingCache, setLoadingCache] = useState(true)
 
-  client
-    .query({
-      query: gql`
-        query GetRates {
-          rates(currency: "USD") {
-            currency
-          }
-        }
-      `,
-    })
-    .then(res => console.log(res));
+  useEffect(() => {
+    persistCache({
+      cache,
+      storage: AsyncStorage
+    }).then(() => setLoadingCache(false))
+  }, [])
+
+  if (loadingCache) {
+    return <ActivityIndicator size="large" />
+  }
 
   return (
-    <SafeAreaView>
-      <StatusBar />
-      <Text>Tratata</Text>
-    </SafeAreaView>
-  );
-};
+    <ApolloProvider client={client}>
+      <NavigationContainer>
+        <AppNavigation />
+      </NavigationContainer>
+    </ApolloProvider>
+  )
+}
 
-export default App;
+export default App
