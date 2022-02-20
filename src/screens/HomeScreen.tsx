@@ -1,6 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
 import React from 'react'
-import { View, Text, FlatList, ActivityIndicator } from 'react-native'
+import { SafeAreaView, Text, FlatList, ActivityIndicator } from 'react-native'
 
 const RATES = gql`
   query GetRates {
@@ -14,8 +14,8 @@ export const HomeScreen = () => {
   const { data, loading } = useQuery(RATES)
 
   return (
-    <View>
-      {loading ? (
+    <SafeAreaView>
+      {!loading ? (
         <FlatList
           data={data.rates}
           keyExtractor={(item, index) => index.toString()}
@@ -28,8 +28,15 @@ export const HomeScreen = () => {
           }}
         />
       ) : (
-        <ActivityIndicator size="large" />
+        <ActivityIndicator
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignContent: 'center'
+          }}
+          size="large"
+        />
       )}
-    </View>
+    </SafeAreaView>
   )
 }
